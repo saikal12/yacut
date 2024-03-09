@@ -2,18 +2,19 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, URLField
 from wtforms.validators import DataRequired, Length, Optional, Regexp
 
-PATTERN_SHORT_URL = r'^[A-Za-z0-9_]+$'
+from .constants import PATTERN_SHORT_URL, LINKS_LEN_MIN, ORIGINAL_LEN_MAX, SHORT_LEN_MAX
 
 
 class LinkForm(FlaskForm):
     original_link = URLField(
         'Введите название ссылки',
         validators=[DataRequired(message='Обязательное поле'),
-                    Length(1, 128)]
+                    Length(LINKS_LEN_MIN, ORIGINAL_LEN_MAX)]
     )
     custom_id = URLField(
         'Введите название короткой ссылки',
-        validators=[Length(1, 16, message='Ссылка не должна превышать 16 символов'), Optional(),
+        validators=[Length(LINKS_LEN_MIN, SHORT_LEN_MAX,
+                           message=f'Ссылка не должна превышать {SHORT_LEN_MAX} символов'), Optional(),
                     Regexp(PATTERN_SHORT_URL,)
                     ])
     submit = SubmitField('Добавить')

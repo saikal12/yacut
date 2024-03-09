@@ -42,6 +42,9 @@
           <div class="col-sm">
           </div>
           <div class="col-sm">
+            {% if short_url %}
+              <p>Ваша новая ссылка готова: <a href="{{ request.base_url }}{{ short_url }}">{{ request.base_url }}{{ short_url }}</a></p>
+            {% endif %}
             <h5 class="text-center">
               {% with messages = get_flashed_messages() %}
                 {% if messages %}

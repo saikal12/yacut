@@ -1,9 +1,11 @@
 import secrets
 import string
 
-from flask import flash, redirect, render_template, request
+from flask import flash, redirect, render_template
 
-from . import app, db
+from yacut.error_handlers import InvalidAPIUsage
+
+from . import app
 from .forms import LinkForm
 from .models import URLMap
 
@@ -18,25 +20,15 @@ def get_unique_short_id():
 def index_view():
     form = LinkForm()
     if form.validate_on_submit():
-        custom_id = form.custom_id.data
-        if not custom_id:
-            custom_id = get_unique_short_id()
-        if URLMap.query.filter_by(short=custom_id).first():
-            flash('Предложенный вариант короткой ссылки уже существует.')
-            return render_template('index.html', form=form)
-        url_map = URLMap(
-            original=form.original_link.data,
-            short=custom_id
-        )
-        db.session.add(url_map)
-        db.session.commit()
-        flash(f'Ваша новая ссылка готова: '
-              f'<a href="{request.base_url}{custom_id}">'
-              f'{request.base_url}{custom_id}</a>')
+        try:
+            url_map = URLMap.create_new_object(form)
+            return render_template('index.html', short_url=url_map.short)
+        except InvalidAPIUsage as e:
+            flash(str(e))
     return render_template('index.html', form=form)
 
 
 @app.route('/<string:short>', methods=['GET'])
 def yacut_redirect(short):
-    return redirect(
-        URLMap.query.filter_by(short=short).first_or_404().original)
+    long_link = URLMap.get_from_db(short, short)
+    return redirect(long_link.original)
