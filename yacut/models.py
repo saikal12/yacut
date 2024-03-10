@@ -4,7 +4,7 @@ from flask import url_for
 
 from yacut import db
 from .error_handlers import InvalidAPIUsage
-from .views import get_unique_short_id
+from .utils import get_unique_short_id
 from .constants import YACUT_REDIRECT
 
 
