@@ -1,8 +1,7 @@
-from flask import flash, redirect, render_template, url_for
-
-from .error_handlers import InvalidAPIUsage
+from flask import flash, redirect, render_template
 
 from . import app
+from .error_handlers import InvalidAPIUsage
 from .forms import LinkForm
 from .models import URLMap
 

@@ -1,11 +1,11 @@
 from re import match
 
-from flask import jsonify, request, flash
+from flask import jsonify, request
 
 from . import app
+from .constants import PATTERN_SHORT_URL, PATTERN_URL
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
-from .constants import PATTERN_SHORT_URL, PATTERN_URL
 
 
 @app.route('/api/id/', methods=['POST'])

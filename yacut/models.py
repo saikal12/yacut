@@ -1,11 +1,12 @@
 from datetime import datetime
 
-from flask import url_for, jsonify
+from flask import url_for
 
 from yacut import db
+
+from .constants import YACUT_REDIRECT
 from .error_handlers import InvalidAPIUsage
 from .utils import get_unique_short_id
-from .constants import YACUT_REDIRECT
 
 
 class URLMap(db.Model):
