@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import url_for
+from flask import url_for, jsonify
 
 from yacut import db
 from .error_handlers import InvalidAPIUsage
@@ -29,7 +29,7 @@ class URLMap(db.Model):
     def create_new_object(data):
         if not data.get('custom_id'):
             data['custom_id'] = get_unique_short_id()
-        if URLMap.query.filter_by(short=data['custom_id']).first():
+        elif URLMap.query.filter_by(short=data['custom_id']).first():
             raise InvalidAPIUsage('Предложенный вариант короткой ссылки уже существует.')
         url_map = URLMap()
         url_map.from_dict(data)
@@ -38,8 +38,8 @@ class URLMap(db.Model):
         return url_map
 
     @staticmethod
-    def get_from_db(field_name, field_value):
-        redirect = URLMap.query.filter(getattr(URLMap, field_name) == field_value).first()
+    def get_from_db(short):
+        redirect = URLMap.query.filter_by(short=short).first()
         if not redirect:
             raise InvalidAPIUsage('Указанный id не найден', 404)
         return redirect

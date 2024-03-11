@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template
+from flask import flash, redirect, render_template, url_for
 
 from .error_handlers import InvalidAPIUsage
 
@@ -11,15 +11,20 @@ from .models import URLMap
 def index_view():
     form = LinkForm()
     if form.validate_on_submit():
+        data = {
+            'url': form.original_link.data,
+            'custom_id': form.custom_id.data
+        }
         try:
-            url_map = URLMap.create_new_object(form)
-            return render_template('index.html', short_url=url_map.short)
+            url_map = URLMap.create_new_object(data)
         except InvalidAPIUsage as e:
-            flash(str(e))
+            flash(e.message)
+        else:
+            return render_template('index.html', form=form, short_url=url_map.short)
     return render_template('index.html', form=form)
 
 
 @app.route('/<string:short>', methods=['GET'])
 def yacut_redirect(short):
-    long_link = URLMap.get_from_db(short, short)
+    long_link = URLMap.get_from_db(short)
     return redirect(long_link.original)
