@@ -32,7 +32,7 @@ def invalid_api_usage(error):
 
 
 @app.errorhandler(InvalidUsage)
-def invalid_api_usage(error):
+def invalid_usage(error):
     return {'message': error.message}, error.status_code
 
 
