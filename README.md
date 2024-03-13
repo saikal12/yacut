@@ -70,10 +70,8 @@ SECRET_KEY=YOUR_SECRET_KEY
 ```
 
 
-### Необходимо выполнить миграции:
+### Необходимо примененить миграции:
 ```
-flask db init
-flask db migrate -m "короткое сообщение"
 flask db upgrade
 ```
 
@@ -85,4 +83,4 @@ flask run
 После запуска проект будет доступен по адресу: http://127.0.0.1:5000
 
 ### Автор проекта:
-https://github.com/saikal12
+[Сулайманова Сайкал](https://github.com/saikal12)

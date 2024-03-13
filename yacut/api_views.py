@@ -1,9 +1,8 @@
-from re import match
+
 
 from flask import jsonify, request
 
 from . import app
-from .constants import PATTERN_SHORT_URL, PATTERN_URL
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 
@@ -15,25 +14,13 @@ def get_link():
         raise InvalidAPIUsage('Отсутствует тело запроса')
     if 'url' not in data:
         raise InvalidAPIUsage('\"url\" является обязательным полем!')
-    if not match(PATTERN_URL, data.get('url')):
-        raise InvalidAPIUsage('Указано недопустимое имя для ссылки')
-    custom_id = data.get('custom_id')
-    if custom_id and not match(PATTERN_SHORT_URL, custom_id):
-        raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
-    try:
-        url_map = URLMap.create_new_object(data)
-    except InvalidAPIUsage as e:
-        raise e
-
-    else:
-        return jsonify(url_map.to_dict()), 201
+    url_map = URLMap.create_new_object(data)
+    return jsonify(url_map.to_dict()), 201
 
 
 @app.route('/api/id/<string:short>/', methods=['GET'])
 def get_original_link(short):
-    try:
-        redirect = URLMap.get_from_db(short)
-    except InvalidAPIUsage as e:
-        raise e
-    else:
-        return jsonify({'url': redirect.original}), 200
+    redirect = URLMap.get_short_id(short)
+    if not redirect:
+        raise InvalidAPIUsage('Указанный id не найден', 404)
+    return jsonify({'url': redirect.original}), 200

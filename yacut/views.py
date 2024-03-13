@@ -1,7 +1,7 @@
 from flask import flash, redirect, render_template
 
 from . import app
-from .error_handlers import InvalidAPIUsage
+from .error_handlers import InvalidUsage
 from .forms import LinkForm
 from .models import URLMap
 
@@ -16,7 +16,7 @@ def index_view():
         }
         try:
             url_map = URLMap.create_new_object(data)
-        except InvalidAPIUsage as e:
+        except InvalidUsage as e:
             flash(e.message)
         else:
             return render_template('index.html', form=form, short_url=url_map.short)
@@ -25,5 +25,7 @@ def index_view():
 
 @app.route('/<string:short>', methods=['GET'])
 def yacut_redirect(short):
-    long_link = URLMap.get_from_db(short)
+    long_link = URLMap.get_short_id(short)
+    if not long_link:
+        raise InvalidUsage('Указанный id не найден', 404)
     return redirect(long_link.original)
