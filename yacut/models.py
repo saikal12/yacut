@@ -9,7 +9,6 @@ from yacut import db
 
 from .constants import (ORIGINAL_LEN_MAX, PATTERN_SHORT_URL, PATTERN_URL,
                         SHORT_LEN_MAX, YACUT_REDIRECT)
-from .error_handlers import InvalidAPIUsage, InvalidUsage
 
 
 class URLMap(db.Model):
@@ -44,12 +43,12 @@ class URLMap(db.Model):
         if not data.get('custom_id'):
             data['custom_id'] = URLMap.get_unique_short_id()
         elif URLMap.query.filter_by(short=data['custom_id']).first():
-            raise InvalidUsage('Предложенный вариант короткой ссылки уже существует.')
+            raise Exception('Предложенный вариант короткой ссылки уже существует.')
         if not match(PATTERN_URL, data.get('url')):
-            raise InvalidAPIUsage('Указано недопустимое имя для ссылки')
+            raise Exception('Указано недопустимое имя для ссылки')
         custom_id = data.get('custom_id')
         if custom_id and not match(PATTERN_SHORT_URL, custom_id):
-            raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
+            raise Exception('Указано недопустимое имя для короткой ссылки')
         return data
 
     @staticmethod
@@ -62,5 +61,5 @@ class URLMap(db.Model):
         return url_map
 
     @staticmethod
-    def get_short_id(short):
+    def get_by_short_id(short):
         return URLMap.query.filter_by(short=short).first()

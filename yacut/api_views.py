@@ -1,4 +1,4 @@
-
+from http import HTTPStatus
 
 from flask import jsonify, request
 
@@ -14,13 +14,17 @@ def get_link():
         raise InvalidAPIUsage('Отсутствует тело запроса')
     if 'url' not in data:
         raise InvalidAPIUsage('\"url\" является обязательным полем!')
-    url_map = URLMap.create_new_object(data)
-    return jsonify(url_map.to_dict()), 201
+    try:
+        url_map = URLMap.create_new_object(data)
+    except Exception as e:
+        raise InvalidAPIUsage(str(e))
+    else:
+        return jsonify(url_map.to_dict()), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<string:short>/', methods=['GET'])
 def get_original_link(short):
-    redirect = URLMap.get_short_id(short)
+    redirect = URLMap.get_by_short_id(short)
     if not redirect:
-        raise InvalidAPIUsage('Указанный id не найден', 404)
-    return jsonify({'url': redirect.original}), 200
+        raise InvalidAPIUsage('Указанный id не найден', HTTPStatus.NOT_FOUND)
+    return jsonify({'url': redirect.original}), HTTPStatus.OK

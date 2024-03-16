@@ -17,7 +17,8 @@ class LinkForm(FlaskForm):
     custom_id = URLField(
         'Введите название короткой ссылки',
         validators=[Length(LINKS_LEN_MIN, SHORT_LEN_MAX,
-                           message=f'Ссылка не должна превышать {SHORT_LEN_MAX} символов'), Optional(),
+                           message=(f'Ссылка не должна превышать '
+                                    f'{SHORT_LEN_MAX} символов')), Optional(),
                     Regexp(PATTERN_SHORT_URL,)
                     ])
     submit = SubmitField('Добавить')
