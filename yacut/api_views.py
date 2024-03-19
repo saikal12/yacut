@@ -3,7 +3,7 @@ from http import HTTPStatus
 from flask import jsonify, request
 
 from . import app
-from .error_handlers import InvalidAPIUsage
+from .error_handlers import InvalidAPIUsage, ValidationError
 from .models import URLMap
 
 
@@ -16,7 +16,7 @@ def get_link():
         raise InvalidAPIUsage('\"url\" является обязательным полем!')
     try:
         url_map = URLMap.create_new_object(data)
-    except Exception as e:
+    except ValidationError as e:
         raise InvalidAPIUsage(str(e))
     else:
         return jsonify(url_map.to_dict()), HTTPStatus.CREATED

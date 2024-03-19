@@ -3,7 +3,7 @@ from http import HTTPStatus
 from flask import flash, redirect, render_template
 
 from . import app
-from .error_handlers import InvalidUsage
+from .error_handlers import InvalidUsage, ValidationError
 from .forms import LinkForm
 from .models import URLMap
 
@@ -18,7 +18,7 @@ def index_view():
         }
         try:
             url_map = URLMap.create_new_object(data)
-        except Exception as e:
+        except ValidationError as e:
             flash(str(e))
         else:
             return render_template('index.html', form=form, short_url=url_map.short)
